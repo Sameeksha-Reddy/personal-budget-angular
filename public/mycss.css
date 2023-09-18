@@ -36,7 +36,7 @@ color:white;
 
 .img{
     display: block;    
-    width: 15%;
+    width: 150px;
     margin: auto;
 }
 
@@ -50,10 +50,7 @@ color:white;
 }
 
 .textbox{
-    width: 45%;
-    height: 20%;
-    border:1px solid rgb(0, 0, 0);
-    display: inline-block;
+    display: block;
     text-align: justify;
     margin: 10px;
     padding: 5px;
@@ -73,3 +70,22 @@ color:white;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     margin-top: 100px;
 }
+
+#myChart{
+    width: 500px !important;
+    height: 500px !important;
+}
+
+    .randomize {
+        background-color: #007BFF; /* Set the background color */
+        color: #fff; /* Set the text color */
+        padding: 10px 20px; /* Add padding to the button */
+        border: none; /* Remove the border */
+        cursor: pointer; /* Change cursor to pointer on hover */
+        border-radius: 5px; /* Add rounded corners */
+        font-size: 16px; /* Set the font size */
+    }
+
+    .randomize:hover {
+        background-color: #0056b3; /* Change background color on hover */
+    }

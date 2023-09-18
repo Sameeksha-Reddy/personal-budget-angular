@@ -104,22 +104,23 @@
             <div class="textbox">
                 <h1>Free</h1>
                 <p>
-                    <canvas id="myChart" width="200" height="200"></canvas>
+                    <canvas id="myChart" width="600" height="600"></canvas>
                 </p>
             </div>
+            <div>
+                <h1>D3JS chart</h1>
+                <svg width="800px", height="650px" style="margin: 5px;"></svg>
+            </div>
+    
         </section>
+        <button class="randomize">Randomize</button>
 
-<!-- This is a Semantic HTML Change -->
-    <div class="foot">
-        <footer>
-            <p>All rights reserved &copy; Velangini Sameeksha Reddy Khambam</p>
-        </footer>
-    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js" integrity="sha512-aoTNnqZcT8B4AmeCFmiSnDlc4Nj/KPaZyB5G7JnOnUEkdNpCZs1LCankiYi01sLTyWy+m2P+W4XM+BuQ3Q4/Dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>  
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js" integrity="sha512-aoTNnqZcT8B4AmeCFmiSnDlc4Nj/KPaZyB5G7JnOnUEkdNpCZs1LCankiYi01sLTyWy+m2P+W4XM+BuQ3Q4/Dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js" integrity="sha512-7U4rRB8aGAHGVad3u2jiC7GA5/1YhQcQjxKeaVms/bT66i3LVBMRcBI9KwABNWnxOSwulkuSXxZLGuyfvo7V1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script>
+        <script>
         var dataSource = {
             datasets:[
                 {
@@ -161,5 +162,176 @@
         }
         getBudget();
     </script>
+
+
+         <script src="http://d3js.org/d3.v3.min.js"></script>
+         <script>
+         
+         var svg = d3.select("svg")
+             .append("g")
+         
+         svg.append("g")
+             .attr("class", "slices");
+         svg.append("g")
+             .attr("class", "labels");
+         svg.append("g")
+             .attr("class", "lines");
+         
+         var width = 960,
+             height = 450,
+             radius = Math.min(width, height) / 2;
+         
+         var pie = d3.layout.pie()
+             .sort(null)
+             .value(function(d) {
+                 return d.value;
+             });
+         
+         var arc = d3.svg.arc()
+             .outerRadius(radius * 0.8)
+             .innerRadius(radius * 0.4);
+         
+         var outerArc = d3.svg.arc()
+             .innerRadius(radius * 0.9)
+             .outerRadius(radius * 0.9);
+         
+         svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+         
+         var key = function(d){ return d.data.label; };
+         
+         var color = d3.scale.ordinal()
+             .domain(["Eat Out", "Rent", "Grocery", "Electricity", "Water Bill", "Wifi", "Travel", "Entertainment", "Phone"])
+             .range(['#ff1a1a','#00cc44','#4d79ff','#e6e600','#8c1aff','#339933','#ac7339','#009999','#cc6699']);
+         
+             function updateChartWithRandomData() {
+    var randomData = generateRandomData();
+    updateChart(randomData);
+};
+                
+d3.select(".randomize").on("click", updateChartWithRandomData);
+
+
+         axios.get('/budget').then(res => {
+             console.log(res);
+             var data = res.data.myBudget.map(obj => {
+                 return {label: obj.title, value: obj.budget}
+             })
+             change(data);
+         })
+         
+         function change(data) {
+         
+             
+             var slice = svg.select(".slices").selectAll("path.slice")
+                 .data(pie(data), key);
+         
+             slice.enter()
+                 .insert("path")
+                 .style("fill", function(d) { return color(d.data.label); })
+                 .attr("class", "slice");
+         
+                 slice
+    .transition().duration(1000)
+    .attrTween("d", function(d) {
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+            return arc(interpolate(t));
+        };
+    });
+         
+             slice.exit()
+                 .remove();
+         
+ 
+         
+             var text = svg.select(".labels").selectAll("text")
+                 .data(pie(data), key);
+         
+             text.enter()
+                 .append("text")
+                 .attr("dy", ".35em")
+                 .text(function(d) {
+                     return d.data.label;
+                 });
+             
+             function midAngle(d){
+                 return d.startAngle + (d.endAngle - d.startAngle)/2;
+             }
+         
+             text.transition().duration(1000)
+                 .attrTween("transform", function(d) {
+                     this._current = this._current || d;
+                     var interpolate = d3.interpolate(this._current, d);
+                     this._current = interpolate(0);
+                     return function(t) {
+                         var d2 = interpolate(t);
+                         var pos = outerArc.centroid(d2);
+                         pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+                         return "translate("+ pos +")";
+                     };
+                 })
+                 .styleTween("text-anchor", function(d){
+                     this._current = this._current || d;
+                     var interpolate = d3.interpolate(this._current, d);
+                     this._current = interpolate(0);
+                     return function(t) {
+                         var d2 = interpolate(t);
+                         return midAngle(d2) < Math.PI ? "start":"end";
+                     };
+                 });
+         
+             text.exit()
+                 .remove();
+         
+                         
+                 var polyline = svg.select(".lines").selectAll("polyline")
+    .data(pie(data), key);
+
+polyline.enter()
+    .append("polyline")
+    .attr("stroke", "black") 
+    .attr("fill", "none") 
+    .attr("stroke-width", 2);
+
+polyline.transition().duration(1000)
+    .attrTween("points", function(d){
+        this._current = this._current || d;
+        var interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+            var d2 = interpolate(t);
+            var pos = outerArc.centroid(d2);
+            pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+            return [arc.centroid(d2), outerArc.centroid(d2), pos];
+        };			
+    });
+
+polyline.exit()
+.remove(); 
+};        
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- This is a Semantic HTML Change -->
+<div class="foot">
+    <footer>
+        <p>All rights reserved &copy; Velangini Sameeksha Reddy Khambam</p>
+    </footer>
+</div>
 </body>
 </html>
