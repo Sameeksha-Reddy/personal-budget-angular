@@ -150,7 +150,7 @@
         }
 
         function getBudget() {
-            axios.get('/budget')
+            axios.get('http://localhost:3000/budget')
             .then(function(res){
                 console.log(res);
                 for (var i=0; i<res.data.myBudget.length; i++){
@@ -211,7 +211,7 @@
 d3.select(".randomize").on("click", updateChartWithRandomData);
 
 
-         axios.get('/budget').then(res => {
+         axios.get('http://localhost:3000/budget').then(res => {
              console.log(res);
              var data = res.data.myBudget.map(obj => {
                  return {label: obj.title, value: obj.budget}
@@ -312,21 +312,6 @@ polyline.exit()
 .remove(); 
 };        
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- This is a Semantic HTML Change -->
 <div class="foot">
     <footer>
