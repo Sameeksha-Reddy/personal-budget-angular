@@ -12,6 +12,8 @@ import { LoginComponent } from './login/login.component';
 import { P404Component } from './p404/p404.component';
 import { AboutComponent } from './about/about.component';
 import { ArticleComponent } from './article/article.component';
+import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
+import { ContactComponent } from './contact/contact.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import { ArticleComponent } from './article/article.component';
     LoginComponent,
     P404Component,
     AboutComponent,
-    ArticleComponent
+    ArticleComponent,
+    BreadcrumbsComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,
